@@ -14,5 +14,5 @@
   * [Fly.inc](creating-revenues/fly.inc.md)
 * [Library](library/README.md)
   * [v1](library/v1/README.md)
-    * [🔐 ui-v1](library/v1/v1.md)
+    * [🔐 ui-v1](library/v1.md)
 * [Setup Discord Join from OAuth2](setup-discord-join-from-oauth2.md)

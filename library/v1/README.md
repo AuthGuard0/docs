@@ -20,13 +20,23 @@ local success = AuthGuard:validateKey("key")
 
 Or use obfuscate in AuthGuard
 
+### 🔗 Get Key Link
+
 ```lua
-AuthGuard:getLink() --> string -- Get Link for Get Key
+AuthGuard:getLink() --> string
 ```
+
+Returns the URL users must visit to get a key.
+
+***
+
+### ✅ Validate Key
 
 ```lua
 AuthGuard:validateKey(key: string) --> boolean
 ```
+
+Checks if the key is valid.
 
 ### 🧪 Example Usage
 
