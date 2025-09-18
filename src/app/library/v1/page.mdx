@@ -34,6 +34,15 @@ AuthGuard.ValidateKey({
 ```
 
 Checks if the key is valid.
+If the key is valid, it returns `validated`.
+If the key is invalid, it returns `invalid`.
+
+If the key is valid, it also updates the following environment variables:
+
+- `AG_ExpiredAt`: number (UTC timestamp)
+- `AG_Hwid`: string (HWID of the user)
+- `AG_IsPremium`: boolean (whether the user is premium or not)
+- `AG_DiscordId`: string (Discord ID of the user, if available)
 
 ### 🧪 Example Usage
 
@@ -54,4 +63,13 @@ end
 
 -- Your actual code starts here
 print("Key valid. Running script...")
+print("Your HWID is:", AG_Hwid)
+print("Your key expires at:", os.date('%Y-%m-%d %H:%M:%S', AG_ExpiredAt))
+if AG_IsPremium then
+    print("You are a premium user!")
+else
+    print("You are a free user.")
+end
+
+print("Your Discord ID is:", AG_DiscordId or "Not linked")
 ```
