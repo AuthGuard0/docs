@@ -53,7 +53,7 @@ print("Get your key at:", AuthGuard.GetKeyLink({
   Service = __SERVICE_ID__,
 }))
 
-if AuthGuard:validateKey({
+if AuthGuard.ValidateKey({
   Service = __SERVICE_ID__,
   Key = key
 }) == 'invalid' then
