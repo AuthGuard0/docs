@@ -1,31 +1,57 @@
+---
+description: >-
+  When you obfuscate your script with AuthGuard, the library is added  
+  automatically. There is also a second option — using the library directly —  
+  but it’s not protected.
+---
+
 import { Image } from 'nextra/components'
 
-# 🔐 ui-v1
+# v1
 
-### Setup
+`__SERVICE_ID__` implements automatically if you obfuscate with AuthGuard.
+
+### 🔗 Get Key Link
+
 
 ```lua
-getgenv().settings = {
-    Script_Title = "Script Name", -- Title shown in the UI
-    KeyExpiration = 24,            -- Key expiration time in hours
-    InviteCode = "GhcXWRkc"
-}
-
-local AuthGuard = loadstring(game:HttpGet("https://raw.githubusercontent.com/AuthGuard0/library/refs/heads/main/v1_ui.lua"))(
-	"PRIVATE_KEY",
-	{
-		serviceId = "SERVICE_ID",
-	}
-)
--- Place your script below this line and obfuscate the entire file for protection
+AuthGuard.GetKeyLink({
+  Service = __SERVICE_ID__
+}) --> string
 ```
 
-Source UI: [https://github.com/AuthGuard0/library/blob/main/ui/peakxz-ui.lua](https://github.com/AuthGuard0/library/blob/main/ui/peakxz-ui.lua)
-
-We also can obfuscate in AuthGuard this UI and he will be works.
+Returns the URL users must visit to get a key.
 
 ***
 
-## Preview:
+### ✅ Validate Key
 
-<Image src='/ui_v1.png' />
+```lua
+AuthGuard.ValidateKey({
+  Service = __SERVICE_ID__,
+  Key = 'your_key_here'
+}) --> string (invalid or validated)
+```
+
+Checks if the key is valid.
+
+### 🧪 Example Usage
+
+```lua
+local key = "YOUR_KEY_HERE"
+
+print("Get your key at:", AuthGuard.GetKeyLink({
+  Service = __SERVICE_ID__,
+}))
+
+if AuthGuard:validateKey({
+  Service = __SERVICE_ID__,
+  Key = key
+}) == 'invalid' then
+    warn("Invalid Key")
+    return
+end
+
+-- Your actual code starts here
+print("Key valid. Running script...")
+```
