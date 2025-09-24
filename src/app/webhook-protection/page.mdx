@@ -1,0 +1,112 @@
+# Webhook Protection
+
+AuthGuard provides a comprehensive webhook protection system through specialized macros that safeguard your webhooks from malicious activities such as deletion, spam attacks, or complete destruction.
+
+Valid script authentication is required to utilize these protection macros. If a script runs without proper authorization (such as free-for-all scripts), webhook delivery will be blocked automatically.
+
+## Implementation Guide:
+
+These are specialized macros that must be embedded directly into your script code to establish secure webhook communications.
+
+**Syntax:** `AG_SEND_WEBHOOK(<url constant>, <webhook template>)`
+
+This function requires exactly 2 parameters: the first parameter must be a constant string containing your webhook URL, while the second parameter should be a constant table structure defining your webhook's JSON payload.
+
+Variables cannot be passed as direct arguments - only constant values are accepted for security purposes.
+
+Additionally, a sanitization macro is available to prevent client-side value manipulation and spoofing attempts.
+
+**Syntax:** `AG_SANITIZE(<any>, <regex string literal>)`
+
+The sanitization macro accepts 2 parameters: the first can be any data type (variables, function returns, etc.), while the second must be a regex pattern string without forward slashes or anchors (^ / $).
+
+Example: `AG_SANITIZE(playerName, "[a-zA-Z0-9_]{3,40}")`
+
+## Usage Example:
+
+```lua
+if bountyAmount > 45000 then
+  -- Alert system for high-value bounty targets
+  AG_SEND_WEBHOOK("https://discord.com/api/webhooks/......", {
+    username = "Bounty Alert System",
+    embeds = {
+      {
+        title = "High-value target identified!",
+        description = "Current Bounty: " .. AG_SANITIZE(bountyAmount, "[0-9]{1,6}"),
+        color = 16711680, -- red color
+        fields = {
+          {
+            name = "Target Name:",
+            value = AG_SANITIZE(targetName, "[a-zA-Z0-9_]{3,40}"),
+            inline = true
+          },
+          {
+            name = "Reported by:",
+            value = "<@%DISCORD_ID%>", -- Server-generated variable
+            inline = true
+          }
+        }
+      }
+    }
+  });
+  print("Security alert dispatched!")
+end
+```
+
+This implementation securely transmits high-bounty player information with server-side validation and sanitization. The client provides only the bounty amount and player name variables, while all processing occurs server-side to maintain security integrity.
+
+Always utilize AG_SANITIZE within webhook templates to wrap any user-provided data. Without proper sanitization, users can potentially manipulate values through various exploitation methods.
+
+### Security Best Practices:
+
+❌ **Avoid this approach:**
+```lua
+AG_SEND_WEBHOOK("https....", {
+  content = "User rank is " .. playerRank -- Unvalidated user input
+});
+```
+
+This method, while technically functional within AuthGuard's system, poses security risks since user-controlled values can be modified through various techniques without server-side verification.
+
+✅ **Recommended secure approach:**
+```lua
+AG_SEND_WEBHOOK("https....", {
+  content = "User rank is " .. AG_SANITIZE(playerRank, "(Diamond|Platinum|Gold)")
+});
+```
+
+## Server-Side Template Variables:
+
+AuthGuard provides server-generated variables that can be embedded within your template strings using % delimiters. These variables are processed server-side and cannot be tampered with or falsified by clients.
+
+Available variables:
+
+| Variable | Description | Sample Output |
+|----------|-------------|---------------|
+| `%DISCORD_ID%` | Discord user ID of the request originator | 1368236353342668872 |
+| `%COUNTRY_CODE%` | Two-character country identifier based on client IP | uk |
+| `%USER_KEY%` | Authentication key identifier | PREFIX_qwertyu123456 |
+| `%CLIENT_IP%` | Client's IPv4/IPv6 address during execution | 8.8.8.8 |
+| `%USER_NOTE%` | Associated key annotation | None |
+| `%IS_PREMIUM%` | "Yes" or "No" indicating premium status | Yes |
+Implementation example:
+
+```lua
+AG_SEND_WEBHOOK("https....", {
+  content = "Script execution detected!\nSession Details:\nOrigin IP: `%CLIENT_IP%` :flag_%COUNTRY_CODE%:"
+});
+```
+
+**Privacy Notice:** When logging sensitive information such as IP addresses, ensure users are properly informed about data collection practices.
+
+## Development Guidelines:
+
+For assistance with regex pattern creation, utilize [https://regex101.com/](https://regex101.com/) for testing, or consult AI assistance with this specific prompt template:
+
+```
+I'm implementing a Lua macro function requiring 2 parameters: a variable and a regex pattern.
+The regex must follow JavaScript syntax, excluding forward slashes at boundaries and anchor characters (^ and $).
+The system automatically handles these elements. Assume 's' flag is applied by default.
+Reference syntax: AG_SANITIZE(variableExpression, "[a-zA-Z0-9_]{2,30}")
+Please provide a regex pattern following this format for my specific requirements.
+```
