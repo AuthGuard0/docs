@@ -17,8 +17,6 @@ RUN npm run build
 
 EXPOSE 3000
 
-RUN chown -R node:node /usr/app
-
 USER node
 
 CMD ["pm2-runtime", "npm", "--", "start"]
