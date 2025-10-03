@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   authguard_docs:
     container_name: authguard_docs
